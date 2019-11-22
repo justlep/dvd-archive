@@ -1,6 +1,7 @@
 <script>
     import Disc from './model/Disc';
     import { createEventDispatcher } from 'svelte';
+    import {saveOrUpdateDisc} from './stores'
 
     const dispatch = createEventDispatcher();
 
@@ -12,14 +13,23 @@
 
     let cancel = () => dispatch('close');
 
+    let savingPromise = null;
+
     let save = () => {
-        alert('save');
-        dispatch('close');
+        savingPromise = new Promise(async (resolve, reject) => {
+	        let disc = new Disc({id, title, ean, discNumber});
+	        try {
+		        await saveOrUpdateDisc(disc);
+		        dispatch('close');
+		        resolve();
+	        } catch (err) {
+		        reject('Failed to save disc');
+	        }
+        });
     };
 </script>
 
-
-<form>
+<form on:submit={save}>
     <h2>
         {id ? 'Edit' : 'Add'} Disc
     </h2>
@@ -41,6 +51,16 @@
 
     <hr>
 
-    <button on:click={cancel}>Cancel</button>
-    <button on:click={save}>Save</button>
+    {#await savingPromise}
+        Saving...
+    {:then discs}
+	    <button on:click={cancel}>Cancel</button>
+	    <button type="submit">Save</button>
+
+    {:catch err}
+	    <p style="color:red">
+            {err}
+	    </p>
+    {/await}
+
 </form>

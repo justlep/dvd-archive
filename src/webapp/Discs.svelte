@@ -1,35 +1,28 @@
 <script>
     import Spinner from './Spinner.svelte';
     import FilteredDiscs from './FilteredDiscs.svelte';
-    import api from './util/api';
     import Disc from './model/Disc';
-    import {editDisc} from './stores';
-
-	let discsPromise = Promise.resolve([]);
+    import {editDisc, reloadDiscs, loadingDiscsPromise} from './stores';
 
 	let filter = '';
-
-	function refreshList() {
-        discsPromise = api.get('/disc').then(result => result.discs.map(d => new Disc(d)));
-    }
 
     function addDisc() {
 	    editDisc( new Disc({}) );
     }
 
-    refreshList();
+    reloadDiscs();
 </script>
 
 <section>
 	<h2>
         Disc List
-        <small><a role="button" on:click={refreshList}>Refresh</a></small>
+        <small><a role="button" on:click={reloadDiscs}>Refresh</a></small>
     </h2>
 
 	<input type="text" placeholder="Filter..." bind:value={filter}/>
-    <button type="button" on:click={addDisc}>New disc</button>
+    <button type="button" on:click={addDisc}>Add disc</button>
 
-    {#await discsPromise}
+    {#await $loadingDiscsPromise}
 
         <p>Loading...</p>
         <Spinner/>
