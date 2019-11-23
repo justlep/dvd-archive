@@ -6,8 +6,6 @@ async function listDiscs(req, res, next) {
     let discs;
 
     try {
-        await new Promise(resolve => setTimeout(resolve, 400)); // TODO remove
-
         discs = await DiscModel.find({}, {sort: 'discNumber'});
     } catch (err) {
         console.error(err);

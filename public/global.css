@@ -43,6 +43,10 @@ input:disabled {
 	color: #ccc;
 }
 
+button:disabled {
+	opacity: 0.5;
+}
+
 input[type="range"] {
 	height: 0;
 }

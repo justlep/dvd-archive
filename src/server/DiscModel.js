@@ -19,7 +19,10 @@ module.exports = class DiscModel extends Document {
             min: 0
         };
 
-        this.title = String;
+        this.title = {
+            type: String,
+            validate: (s) => s && s.trim() === s
+        };
 
         this.ean = {
             type: String,

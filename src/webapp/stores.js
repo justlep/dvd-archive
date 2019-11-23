@@ -21,16 +21,15 @@ export async function saveOrUpdateDisc(disc) {
         savedDiscJson;
 
     try {
-        if (id) {
-            savedDiscJson = await api.put(`/disc/${id}`, discJson).savedDisc;
-        } else {
-            savedDiscJson = await api.post('/disc', discJson).savedDisc;
-        }
+        let result = id ? await api.put(`/disc/${id}`, discJson) :
+                          await api.post('/disc', discJson);
+
+        // TODO just add or update the actual disc object in the existing list?
+        // savedDiscJson = result.savedDisc;
+        setTimeout(reloadDiscs, 0);
     } catch (err) {
         throw 'Failed to save';
     }
-
-    setTimeout(reloadDiscs, 0);
 }
 
 export function reloadDiscs() {
