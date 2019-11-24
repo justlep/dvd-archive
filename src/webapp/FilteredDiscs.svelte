@@ -1,5 +1,5 @@
 <script>
-    import {editDisc} from './stores';
+    import {editDisc, deleteDisc} from './stores';
 
     export let discs;
     export let filter;
@@ -7,6 +7,18 @@
     $: normalizedFilter = filter ? filter.toLowerCase().trim() : '';
     $: filteredDiscs = !discs ? [] :
              normalizedFilter ? discs.filter(disc => disc.title.toLowerCase().includes(normalizedFilter)) : discs;
+
+    let discToDelete;
+
+    function confirmAndDeleteDisc(disc) {
+        if (disc !== discToDelete) {
+            discToDelete = disc;
+        } else {
+            deleteDisc(disc)
+                    .then(() => discToDelete = null)
+                    .catch(err => alert(err));
+        }
+    }
 
 </script>
 
@@ -21,14 +33,16 @@
 	        <th></th>
         </tr></thead>
         <tbody>
-        {#each filteredDiscs as disc}
+        {#each filteredDiscs as disc (disc.id)}
 			<tr on:click={() => editDisc(disc)}>
 				<td>{ disc.discNumber }</td>
                 <td>{ disc.title }</td>
                 <td>{ disc.ean }</td>
-                <td>
-                    <!-- <a href="#" role="button" on:click="{() => editDisc(disc)}">Edit</a> -->
-                    TODO del/move up/down
+                <td width="1">
+                    {#if disc === discToDelete}
+		                <a href="#" role="button" on:click|stopPropagation={() => discToDelete = null}>Cancel</a> |
+                    {/if}
+                    <a href="#" role="button" on:click|stopPropagation="{() => confirmAndDeleteDisc(disc)}">{disc === discToDelete ? 'DELETE' : 'Delete'}</a>
                 </td>
 			</tr>
         {/each}
@@ -60,6 +74,7 @@
 
     td:last-child {
         text-align: center;
+        white-space: nowrap;
     }
 
     tbody tr:hover td {

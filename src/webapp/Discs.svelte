@@ -2,9 +2,7 @@
     import Spinner from './Spinner.svelte';
     import FilteredDiscs from './FilteredDiscs.svelte';
     import Disc from './model/Disc';
-    import {editDisc, reloadDiscs, loadingDiscsPromise} from './stores';
-
-	let filter = '';
+    import {editDisc, reloadDiscs, loadingDiscsPromise, filter, allDiscs} from './stores';
 
     function addDisc() {
 	    editDisc( new Disc({}) );
@@ -19,7 +17,7 @@
         <small><a role="button" on:click={reloadDiscs}>Refresh</a></small>
     </h2>
 
-	<input type="text" placeholder="Filter..." bind:value={filter}/>
+	<input type="text" placeholder="Filter..." bind:value={$filter} on:keydown={(e) => e.key === 'Escape' && ($filter = '')}/>
     <button type="button" on:click={addDisc}>Add disc</button>
 
     {#await $loadingDiscsPromise}
@@ -27,9 +25,9 @@
         <p>Loading...</p>
         <Spinner/>
 
-    {:then discs}
+    {:then foo}
 
-	    <FilteredDiscs discs={discs} filter={filter} />
+	    <FilteredDiscs discs={$allDiscs} filter={$filter} />
 
     {:catch error}
 

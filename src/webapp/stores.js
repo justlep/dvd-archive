@@ -8,6 +8,8 @@ export const editedDisc = writable(null);
 
 export const loadingDiscsPromise = writable(null);
 
+export const filter = writable('');
+
 export function editDisc(discToEdit) {
     editedDisc.update(() => discToEdit);
 }
@@ -32,13 +34,31 @@ export async function saveOrUpdateDisc(disc) {
     }
 }
 
+/**
+ * @param {type Disc} disc
+ */
+export async function deleteDisc(disc) {
+    let {id} = disc,
+        savedDiscJson;
+
+    try {
+        await api.del('/disc/' + id);
+
+        allDiscs.update(oldDiscs => oldDiscs.filter(d => d.id !== id));
+
+    } catch (err) {
+        throw 'Failed to delete disc';
+    }
+}
+
 export function reloadDiscs() {
     loadingDiscsPromise.update(oldPromise => {
         allDiscs.update(() => []);
         return new Promise(async (resolve, reject) => {
             try {
                 let {discs} = await api.get('/disc');
-                resolve(discs.map(discJson => new Disc(discJson)));
+                allDiscs.update(() => discs.map(discJson => new Disc(discJson)));
+                resolve();
             } catch (err) {
                 reject(err);
             }

@@ -10,6 +10,7 @@
     export let disc;
 
     let titleTextfield;
+    let scannedImage;
 
     // reactive props used by the form, populated initially with the given disc's props
     let {id, title, ean, discNumber} = disc;
@@ -22,7 +23,8 @@
 
     let onEan = ({detail}) => {
         isScanning = false;
-        ean = detail;
+        scannedImage.src = detail.imageSrc;
+        ean = detail.ean;
     };
 
     $: canSave = !isScanning && title.trim();
@@ -60,7 +62,11 @@
 <form on:submit={save}>
 
     <h2>
-        {id ? 'Edit' : 'Add'} Disc
+        {#if id}
+            Edit &raquo;{disc.title}&laquo;
+        {:else}
+            Add Disc
+        {/if}
     </h2>
 
     <label for="edited-disc-title">
@@ -70,27 +76,29 @@
 
     <label for="edited-disc-ean">
         EAN:
-        <input id="edited-disc-ean" type="text" bind:value={ean} />
+	    <div class="leftRight">
+		    <input id="edited-disc-ean" type="text" bind:value={ean} />
+		    <button type="button" on:click={() => isScanning = true} disabled={isScanning}>Scan Barcode</button>
+        </div>
+        <img class="ean-image" alt="" bind:this={scannedImage}>
     </label>
 
     <label for="edited-disc-discNumber">
-        Disc #
+        Disc Number in archive:
         <input id="edited-disc-discNumber" type="number" min="0" bind:value={discNumber} />
     </label>
-
-    <hr>
 
     {#await savingPromise}
         Saving...
     {:then discs}
 
-	    <button type="button" on:click={() => isScanning = !isScanning} disabled={!!ean}>{isScanning ? 'Cancel Scanning' : 'Scan Barcode'}</button>
-
         {#if isScanning}
-		    <BarcodeScanner on:ean={onEan} />
+		    <BarcodeScanner on:ean={onEan} on:cancel={() => isScanning = false} />
         {:else}
-            <button type="button" on:click={cancel}>Cancel</button>
-            <button type="submit" disabled={!canSave}>Save</button>
+            <div class="buttons">
+                <button type="button" on:click={cancel}>Cancel</button>
+                <button type="submit" disabled={!canSave}>Save</button>
+            </div>
         {/if}
 
     {:catch err}
@@ -100,3 +108,41 @@
     {/await}
 
 </form>
+
+<style>
+
+    h2 {
+        text-align: center;
+    }
+
+    .leftRight {
+        display: flex;
+        align-items: flex-start;
+    }
+
+    form {
+        text-align: left;
+        width: 70vw;
+        max-width: 600px;
+        margin: 0 auto;
+        background: #f6f6f6;
+        padding: 1px 1em 1em;
+    }
+
+    .ean-image {
+        max-width: 250px;
+        display: block;
+    }
+
+    input[type="text"],
+    input[type="number"] {
+        display: block;
+        width: 100%;
+        margin-bottom: 1em;
+    }
+
+    button {
+        white-space: nowrap;
+        margin: 0;
+    }
+</style>

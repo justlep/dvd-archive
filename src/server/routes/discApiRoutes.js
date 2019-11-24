@@ -31,6 +31,17 @@ async function addOrUpdateDisc(req, res, next) {
     ApiResponse.sendResult(res, {disc: savedDisc.toJson()});
 }
 
+async function deleteDisc(req, res, next) {
+    let disc = req._requestedDisc;
+    try {
+        await disc.delete();
+    } catch (err) {
+        console.error('Failed to delete disc', err);
+        return ApiResponse.sendError(res, 'Failed to delete', 400)
+    }
+    ApiResponse.sendResult(res);
+}
+
 /**
  * @param {Router} apiRouter
  */
@@ -53,6 +64,7 @@ function initApiRoutes(apiRouter) {
 
     discRouter.get('/', listDiscs);
     discRouter.put('/:discId', addOrUpdateDisc);
+    discRouter.delete('/:discId', deleteDisc);
     discRouter.post('/', addOrUpdateDisc);
 }
 

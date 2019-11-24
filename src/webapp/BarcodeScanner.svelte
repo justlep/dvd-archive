@@ -1,6 +1,7 @@
 <script>
 	import {onMount, createEventDispatcher} from 'svelte';
 	import Quagga from 'quagga';
+	import Modal from './Modal.svelte';
 
 	let dispatch = createEventDispatcher();
 
@@ -36,7 +37,7 @@
                     facingMode: 'environment'
                     //, deviceId: 'TODO'
                 },
-                singleChannel: true // red only should suffice for EANs
+                singleChannel: false // red only should suffice for EANs
 			},
 			decoder : {
 				readers : ["ean_reader"],
@@ -52,15 +53,19 @@
 				return;
 			}
 			_populateCameraDevices();
-			status = 'Scanning...';
+			status = 'Scanning for EAN...';
 			Quagga.start();
 		});
 
 		Quagga.onDetected(result => {
 		    let foundEan = result.codeResult.code;
+		    debugger;
 			Quagga.stop();
 		    status = 'Found EAN ' + foundEan;
-		    setTimeout(() => dispatch('ean', foundEan));
+		    setTimeout(() => dispatch('ean', {
+		        ean: foundEan,
+                imageSrc: Quagga.canvas.dom.image.toDataURL()
+		    }));
 		});
 
 		Quagga.onProcessed(function(result) {
@@ -96,34 +101,53 @@
 
 </script>
 
-<p>{ status }</p>
+<Modal>
 
-<p class="error">{ error }</p>
+    <div class="wrap">
 
-<p>
-    {#if devices.length}
-	    <select class="camera" bind:value={selectedDevice}>
+        <p>{ status }</p>
 
-            {#each devices as device}
-			    <option value={device}>{ device.label }</option>
-            {/each}
-	    </select>
-    {:else}
-        Checking camera options...
-    {/if}
-</p>
+        <p class="error">{ error }</p>
 
-<div id="scannerPreview"></div>
+        <p>
+            {#if devices.length}
+                <select class="camera" bind:value={selectedDevice}>
+
+                    {#each devices as device}
+                        <option value={device}>{ device.label }</option>
+                    {/each}
+                </select>
+            {:else}
+                Checking camera options...
+            {/if}
+        </p>
+
+        <div id="scannerPreview"></div>
+
+        <br>
+
+        <button type="button" on:click={() => dispatch('cancel')}>Stop scanning</button>
+
+    </div>
+
+</Modal>
 
 <style>
+    .wrap {
+        text-align: center;
+    }
+
     .error {
         color: red;
     }
 
 	#scannerPreview {
 		position: relative;
-        display: inline-block;
 	}
+
+    :global(#scannerPreview > *) {
+        max-width: 100% !important;
+    }
 
     :global(#scannerPreview canvas) {
         position: absolute;
