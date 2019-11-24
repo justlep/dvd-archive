@@ -31,22 +31,34 @@
         savingPromise = new Promise(async (resolve, reject) => {
 	        let disc = new Disc({id, title, ean, discNumber});
 	        try {
-		        await saveOrUpdateDisc(disc);
+	            await saveOrUpdateDisc(disc);
 		        dispatch('close');
-		        resolve();
 	        } catch (err) {
 		        reject('Failed to save disc');
-
 		        setTimeout(() => savingPromise = null, 1000);
 	        }
         });
+    };
+
+    let handleEscape = (e) => {
+        if (e.key !== 'Escape') {
+            return;
+	    }
+        if (isScanning) {
+            isScanning = false;
+        } else if (!savingPromise) {
+            dispatch('close');
+        }
     };
 
     onMount(() => titleTextfield.focus());
 
 </script>
 
+<svelte:window on:keydown={handleEscape}/>
+
 <form on:submit={save}>
+
     <h2>
         {id ? 'Edit' : 'Add'} Disc
     </h2>
