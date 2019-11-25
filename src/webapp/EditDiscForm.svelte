@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
-    import {saveOrUpdateDisc} from './stores'
+    import {saveOrUpdateDisc, lookupTitleForEan} from './stores'
     import Disc from './model/Disc';
     import BarcodeScanner from './BarcodeScanner.svelte';
 
@@ -25,9 +25,16 @@
         isScanning = false;
         scannedImage.src = detail.imageSrc;
         ean = detail.ean;
+	    lookupTitle();
     };
 
     $: canSave = !isScanning && title.trim();
+
+    let lookupTitle = () => {
+        lookupTitleForEan(ean)
+                .then(fetchedTitle => title = fetchedTitle || '??')
+                .catch(err => console.warn(err));
+    };
 
     let save = () => {
         savingPromise = new Promise(async (resolve, reject) => {

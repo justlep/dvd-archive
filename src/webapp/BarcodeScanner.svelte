@@ -59,7 +59,6 @@
 
 		Quagga.onDetected(result => {
 		    let foundEan = result.codeResult.code;
-		    debugger;
 			Quagga.stop();
 		    status = 'Found EAN ' + foundEan;
 		    setTimeout(() => dispatch('ean', {

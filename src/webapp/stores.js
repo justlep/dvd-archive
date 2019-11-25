@@ -51,6 +51,22 @@ export async function deleteDisc(disc) {
     }
 }
 
+export async function lookupTitleForEan(ean) {
+    let eanString = String(ean).trim(),
+        retVal = null;
+
+    if (eanString) {
+        try {
+            let {title} = await api.get('/ean/' + eanString);
+            retVal = title;
+        } catch (err) {
+            console.warn(err);
+        }
+    }
+
+    return retVal;
+}
+
 export function reloadDiscs() {
     loadingDiscsPromise.update(oldPromise => {
         allDiscs.update(() => []);
