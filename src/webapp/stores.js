@@ -10,8 +10,8 @@ export const loadingDiscsPromise = writable(null);
 
 export const filter = writable('');
 
-export const autoScanBarcode = writable(false);
-export const autoAddNext = writable(false);
+export const autoScanBarcode = writable(true);
+export const autoAddNext = writable(true);
 
 export function editDisc(discToEdit) {
     editedDisc.update(() => discToEdit);
