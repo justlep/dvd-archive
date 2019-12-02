@@ -21,7 +21,7 @@
 
     let isScanning = false;
 
-    let lookupStatus = 'huh';
+    let lookupStatus = '';
 
     let onEan = ({detail}) => {
         isScanning = false;
@@ -74,7 +74,7 @@
 
     onMount(() => {
 	    titleTextfield.focus();
-	    if (!title && autoScanBarcode) {
+	    if (!title && $autoScanBarcode) {
 	        isScanning = true;
         }
     });
