@@ -2,6 +2,7 @@
 	import {onMount, createEventDispatcher} from 'svelte';
 	import Quagga from 'quagga';
 	import Modal from './Modal.svelte';
+	import {nextFreeDiscNumber} from './stores';
 
 	let dispatch = createEventDispatcher();
 
@@ -53,7 +54,7 @@
 				return;
 			}
 			_populateCameraDevices();
-			status = 'Scanning for EAN...';
+			status = `Scanning for EAN... (Disc# ${$nextFreeDiscNumber})`;
 			Quagga.start();
 		});
 

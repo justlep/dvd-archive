@@ -29,7 +29,7 @@
         scannedImage.src = detail.imageSrc;
         ean = detail.ean;
         if (ean !== '??' && lookupButton) {
-	        lookupButton.focus();
+            setTimeout(() => lookupButton.focus(), 50);
         }
 	    // lookupTitle();
     };
