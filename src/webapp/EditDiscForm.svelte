@@ -10,6 +10,7 @@
     export let disc;
 
     let titleTextfield;
+    let lookupButton;
     let scannedImage;
 
     // reactive props used by the form, populated initially with the given disc's props
@@ -27,7 +28,10 @@
         isScanning = false;
         scannedImage.src = detail.imageSrc;
         ean = detail.ean;
-	    lookupTitle();
+        if (ean !== '??' && lookupButton) {
+	        lookupButton.focus();
+        }
+	    // lookupTitle();
     };
 
     $: canSave = !isScanning && title.trim();
@@ -38,6 +42,11 @@
                 .then(fetchedTitle => {
                     title = fetchedTitle || '??';
                     lookupStatus = 'OK';
+
+                    if (fetchedTitle && titleTextfield) {
+	                    titleTextfield.focus();
+	                    setTimeout(() => titleTextfield.select(), 30);
+                    }
                 })
                 .catch(err => {
                     lookupStatus = 'Lookup Failed';
@@ -95,7 +104,10 @@
 
     <label for="edited-disc-title">
         Title: {#if lookupStatus}<span class="lookupStatus">{ lookupStatus }</span>{/if}
-        <input id="edited-disc-title" type="text" bind:value={title} bind:this={titleTextfield} />
+	    <div class="leftRight">
+            <input id="edited-disc-title" type="text" bind:value={title} bind:this={titleTextfield} />
+		    <button type="button" on:click={lookupTitle} disabled={!ean} bind:this={lookupButton}>Lookup EAN</button>
+        </div>
     </label>
 
     <label for="edited-disc-ean">
