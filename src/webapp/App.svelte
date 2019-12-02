@@ -6,7 +6,7 @@
 	function afterEdit({detail}) {
 		editDisc(null);
 		if (detail && detail.shouldReopen) {
-			setTimeout(addDisc, 1000);
+			setTimeout(addDisc, 50);
 		}
 	}
 </script>
