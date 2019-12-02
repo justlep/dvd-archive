@@ -1,4 +1,4 @@
-import { writable } from 'svelte/store';
+import { writable, derived, get } from 'svelte/store';
 import api from './util/api';
 import Disc from './model/Disc';
 
@@ -10,8 +10,18 @@ export const loadingDiscsPromise = writable(null);
 
 export const filter = writable('');
 
+export const autoScanBarcode = writable(false);
+export const autoAddNext = writable(false);
+
 export function editDisc(discToEdit) {
     editedDisc.update(() => discToEdit);
+}
+
+export const nextFreeDiscNumber = derived(allDiscs, (discs = []) => discs.reduce((nextNo, disc) => disc.discNumber === nextNo ? nextNo + 1 : nextNo, 1));
+
+export function addDisc() {
+    // console.debug('nextFreeDiscNumber: ' + get(nextFreeDiscNumber));
+    editDisc( new Disc({discNumber: get(nextFreeDiscNumber)}) );
 }
 
 /**
@@ -23,14 +33,20 @@ export async function saveOrUpdateDisc(disc) {
         savedDiscJson;
 
     try {
-        let result = id ? await api.put(`/disc/${id}`, discJson) :
-                          await api.post('/disc', discJson);
+        let isNew = !id,
+            result = isNew ? await api.post('/disc', discJson) :
+                             await api.put(`/disc/${id}`, discJson);
 
         // TODO just add or update the actual disc object in the existing list?
-        // savedDiscJson = result.savedDisc;
-        setTimeout(reloadDiscs, 0);
+        // let savedDiscJson = result.disc;
     } catch (err) {
         throw 'Failed to save';
+    }
+
+    try {
+        await reloadDiscs();
+    } catch (err) {
+        throw 'Failed to reload discs';
     }
 }
 
@@ -68,16 +84,18 @@ export async function lookupTitleForEan(ean) {
 }
 
 export function reloadDiscs() {
-    loadingDiscsPromise.update(oldPromise => {
+    let newLoadingPromise = new Promise(async (resolve, reject) => {
         allDiscs.update(() => []);
-        return new Promise(async (resolve, reject) => {
-            try {
-                let {discs} = await api.get('/disc');
-                allDiscs.update(() => discs.map(discJson => new Disc(discJson)));
-                resolve();
-            } catch (err) {
-                reject(err);
-            }
-        });
+        try {
+            let {discs} = await api.get('/disc');
+            allDiscs.update(() => discs.map(discJson => new Disc(discJson)));
+            resolve();
+        } catch (err) {
+            reject(err);
+        }
     });
+
+    loadingDiscsPromise.update(oldPromise => newLoadingPromise);
+
+    return newLoadingPromise;
 }

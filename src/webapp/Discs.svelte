@@ -2,11 +2,7 @@
     import Spinner from './Spinner.svelte';
     import FilteredDiscs from './FilteredDiscs.svelte';
     import Disc from './model/Disc';
-    import {editDisc, reloadDiscs, loadingDiscsPromise, filter, allDiscs} from './stores';
-
-    function addDisc() {
-	    editDisc( new Disc({}) );
-    }
+    import {editDisc, addDisc, reloadDiscs, loadingDiscsPromise, filter, allDiscs} from './stores';
 
     reloadDiscs();
 </script>

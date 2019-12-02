@@ -4,30 +4,42 @@ const ApiResponse = require('../ApiResponse');
 
 const MAX_TITLE_LENGTH = 500;
 
+function getApiUrl(ean, userId = '400000000') {
+    return `http://opengtindb.org/?ean=${ean}&cmd=query&queryid=${userId}`;
+}
+
 async function lookupEan(req, res, next) {
     let ean = req._requestedEan,
         title = '';
 
-    const eanLinkTagInResponse = `<a href="/ean/${ean}" target=_blank>`;
-
-    try {
+        try {
         // docs -> https://github.com/axios/axios
         let response = await axios({
                 method: 'get',
-                url: 'https://www.ean-search.org/',
-                params: {
-                    q: ean
-                },
+                url: getApiUrl(ean),
                 responseType: 'text',
                 responseEncoding: 'utf8'
             }),
-            linkTagIndex = response.indexOf(eanLinkTagInResponse);
+            responseData = response && response.data;
 
-        if (linkTagIndex < 0) {
-            return ApiResponse.sendError(res, 'EAN not found in response', 404);
+        if (!responseData) {
+            throw new Error('API responded with invalid response');
         }
 
-        title = response.substr(linkTagIndex + linkTagIndex.length, MAX_TITLE_LENGTH).replace(/<\/a>.*/, '');
+        if ((/^error=([^0])/m).test(responseData)) {
+            let errorMsg = 'API responded with error: ' + RegExp.$1;
+            console.warn(errorMsg + '\n--- API Response: ---\n' + responseData);
+            throw new Error(errorMsg);
+        }
+
+        if (/^detailname=(.+)$/m.test(responseData)) {
+            title = RegExp.$1.trim();
+        }
+        if (!title && /^name=(.+)$/m.test(responseData)) {
+            title = RegExp.$1.trim();
+        }
+
+        title = title || '?';
 
     } catch (err) {
         console.error(err);

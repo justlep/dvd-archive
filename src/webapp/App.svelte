@@ -1,7 +1,14 @@
 <script>
 	import Discs from './Discs.svelte';
 	import EditDiscForm from './EditDiscForm.svelte';
-	import {editedDisc, editDisc} from './stores';
+	import {editedDisc, editDisc, addDisc, autoAddNext} from './stores';
+
+	function afterEdit({detail}) {
+		editDisc(null);
+		if (detail && detail.shouldReopen) {
+			setTimeout(addDisc, 1000);
+		}
+	}
 </script>
 
 <main>
@@ -9,7 +16,7 @@
 	<p>powered by Svelte.. hopefully</p>
 
 	{#if $editedDisc}
-		<EditDiscForm disc={$editedDisc} on:close={() => editDisc(null)} />
+		<EditDiscForm disc={$editedDisc} on:close={afterEdit} />
 	{:else}
 		<Discs/>
 	{/if}

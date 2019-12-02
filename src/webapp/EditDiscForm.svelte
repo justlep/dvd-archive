@@ -1,6 +1,6 @@
 <script>
     import { createEventDispatcher, onMount } from 'svelte';
-    import {saveOrUpdateDisc, lookupTitleForEan} from './stores'
+    import {saveOrUpdateDisc, lookupTitleForEan, autoScanBarcode, autoAddNext} from './stores'
     import Disc from './model/Disc';
     import BarcodeScanner from './BarcodeScanner.svelte';
 
@@ -15,11 +15,13 @@
     // reactive props used by the form, populated initially with the given disc's props
     let {id, title, ean, discNumber} = disc;
 
-    let cancel = () => dispatch('close');
+    let cancel = () => dispatch('close', {isCancelled: true});
 
     let savingPromise = null;
 
     let isScanning = false;
+
+    let lookupStatus = 'huh';
 
     let onEan = ({detail}) => {
         isScanning = false;
@@ -31,20 +33,30 @@
     $: canSave = !isScanning && title.trim();
 
     let lookupTitle = () => {
+        lookupStatus = 'Running lookup...';
         lookupTitleForEan(ean)
-                .then(fetchedTitle => title = fetchedTitle || '??')
-                .catch(err => console.warn(err));
+                .then(fetchedTitle => {
+                    title = fetchedTitle || '??';
+                    lookupStatus = 'OK';
+                })
+                .catch(err => {
+                    lookupStatus = 'Lookup Failed';
+                    console.warn(err);
+                });
     };
 
     let save = () => {
         savingPromise = new Promise(async (resolve, reject) => {
-	        let disc = new Disc({id, title, ean, discNumber});
+	        let disc = new Disc({id, title, ean, discNumber}),
+                isNewDisc = !disc.id;
+
 	        try {
 	            await saveOrUpdateDisc(disc);
-		        dispatch('close');
+		        setTimeout(() => dispatch('close', {shouldReopen: isNewDisc && $autoAddNext}), 0);
+		        resolve();
 	        } catch (err) {
+		        savingPromise = null;
 		        reject('Failed to save disc');
-		        setTimeout(() => savingPromise = null, 1000);
 	        }
         });
     };
@@ -60,13 +72,18 @@
         }
     };
 
-    onMount(() => titleTextfield.focus());
+    onMount(() => {
+	    titleTextfield.focus();
+	    if (!title && autoScanBarcode) {
+	        isScanning = true;
+        }
+    });
 
 </script>
 
 <svelte:window on:keydown={handleEscape}/>
 
-<form on:submit={save}>
+<form on:submit={save} autocomplete=off>
 
     <h2>
         {#if id}
@@ -77,7 +94,7 @@
     </h2>
 
     <label for="edited-disc-title">
-        Title:
+        Title: {#if lookupStatus}<span class="lookupStatus">{ lookupStatus }</span>{/if}
         <input id="edited-disc-title" type="text" bind:value={title} bind:this={titleTextfield} />
     </label>
 
@@ -116,6 +133,17 @@
 
 </form>
 
+<form class="opts" autocomplete=off>
+    <label>
+        <input type="checkbox" bind:checked={$autoScanBarcode}> Auto-Scan
+    </label>
+    <label>
+	    <input type="checkbox" bind:checked={$autoAddNext}> Reopen dialog after adding new disc
+    </label>
+</form>
+
+
+
 <style>
 
     h2 {
@@ -131,9 +159,9 @@
         text-align: left;
         width: 70vw;
         max-width: 600px;
-        margin: 0 auto;
+        margin: 0 auto 1em;
         background: #f6f6f6;
-        padding: 1px 1em 1em;
+        padding: 1em;
     }
 
     .ean-image {
@@ -151,5 +179,24 @@
     button {
         white-space: nowrap;
         margin: 0;
+    }
+
+    .opts {
+        text-align: left;
+        vertical-align: middle;
+    }
+
+    .opts * {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 1em;
+    }
+    .opts input {
+        margin: 0 5px 0 20px;
+    }
+
+    .lookupStatus {
+        margin-left: 10px;
+        color: magenta;
     }
 </style>
