@@ -43,7 +43,7 @@ async function lookupEan(req, res, next) {
 
     } catch (err) {
         console.error(err);
-        return ApiResponse.sendError(res, 'Failed to lookup EAN', 500);
+        return ApiResponse.sendError(res, 'Failed to lookup EAN');
     }
 
     return ApiResponse.sendResult(res, {title});
@@ -60,7 +60,7 @@ function initApiRoutes(apiRouter) {
         let {ean} = req.params;
 
         if (!ean || !/^\d+$/.test(ean)) {
-            return ApiResponse.sendError(res, 'Bad EAN', 400);
+            return ApiResponse.sendError(res, 'Bad EAN');
         }
 
         req._requestedEan = ean;

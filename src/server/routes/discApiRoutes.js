@@ -2,6 +2,8 @@ const {Router} = require('express');
 const ApiResponse = require('../ApiResponse');
 const DiscModel = require('../DiscModel');
 
+const {prefetchDiscByDiscId} = require('./prefetch');
+
 async function listDiscs(req, res, next) {
     let discs;
 
@@ -9,14 +11,14 @@ async function listDiscs(req, res, next) {
         discs = await DiscModel.find({}, {sort: 'discNumber'});
     } catch (err) {
         console.error(err);
-        return ApiResponse.sendError(res, 'failed to list discs', 400);
+        return ApiResponse.sendError(res, 'failed to list discs');
     }
 
     ApiResponse.sendResult(res, {discs: discs.map(d => d.toJson())});
 }
 
 async function addOrUpdateDisc(req, res, next) {
-    let disc = req._requestedDisc || DiscModel.create({}),
+    let disc = req.getRequestedDisc ? req.getRequestedDisc() : DiscModel.create({}),
         {title, ean, discNumber} = req.body,
         savedDisc;
 
@@ -26,18 +28,18 @@ async function addOrUpdateDisc(req, res, next) {
         savedDisc = await disc.save();
     } catch (err) {
         console.error('Failed to save disc', err);
-        return ApiResponse.sendError(res, 'Failed to save', 400)
+        return ApiResponse.sendError(res, 'Failed to save')
     }
     ApiResponse.sendResult(res, {disc: savedDisc.toJson()});
 }
 
 async function deleteDisc(req, res, next) {
-    let disc = req._requestedDisc;
+    let disc = req.getRequestedDisc();
     try {
         await disc.delete();
     } catch (err) {
         console.error('Failed to delete disc', err);
-        return ApiResponse.sendError(res, 'Failed to delete', 400)
+        return ApiResponse.sendError(res, 'Failed to delete')
     }
     ApiResponse.sendResult(res);
 }
@@ -49,18 +51,7 @@ function initApiRoutes(apiRouter) {
     const discRouter = Router();
     apiRouter.use('/disc', discRouter);
 
-    discRouter.param('discId', async (req, res, next) => {
-        let {discId} = req.params,
-            disc;
-        try {
-            disc = await DiscModel.findById(discId);
-        } catch (err) {
-            console.warn('Disc not found, id=' + discId);
-            return ApiResponse.sendError(res, 'Disc not found', 404);
-        }
-        req._requestedDisc = disc;
-        next();
-    });
+    prefetchDiscByDiscId(discRouter);
 
     discRouter.get('/', listDiscs);
     discRouter.put('/:discId', addOrUpdateDisc);

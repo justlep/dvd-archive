@@ -1,6 +1,13 @@
 const Document = require('camo').Document;
+const path = require('path');
+
+const COVER_FILE_BASE_PATH = path.join(__dirname, '../../data/covers');
 
 module.exports = class DiscModel extends Document {
+
+    static collectionName() {
+        return 'discs';
+    }
 
     /**
      * @param {string} id
@@ -38,7 +45,10 @@ module.exports = class DiscModel extends Document {
         return {id: _id, title, discNumber, ean};
     }
 
-    static collectionName() {
-        return 'discs';
+    /**
+     * @returns {string}
+     */
+    getCoverImagePath() {
+        return this._id ? path.resolve(COVER_FILE_BASE_PATH, this._id) : null;
     }
 };

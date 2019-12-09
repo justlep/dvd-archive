@@ -10,7 +10,7 @@
 <section>
 	<h2>
         Disc List
-        <small><a role="button" on:click={reloadDiscs}>Refresh</a></small>
+        <small><a href="#foo" role="button" on:click={reloadDiscs}>Refresh</a></small>
     </h2>
 
 	<input type="text" placeholder="Filter..." bind:value={$filter} on:keydown={(e) => e.key === 'Escape' && ($filter = '')}/>

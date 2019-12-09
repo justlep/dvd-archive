@@ -11,6 +11,7 @@ const NEDB_URI = 'nedb://' + path.resolve(__dirname, '../../data/db');
 app.use(bodyParser.json({limit: '1000kb'}));
 app.use(bodyParser.urlencoded({extended: false}));
 app.use('/api', apiRouter);
+app.use('/covers', express.static(path.join(__dirname, '../../data/covers')));
 app.use('/', express.static(path.join(__dirname, '../../public')));
 
 require('./routes').initAllRoutes(apiRouter);

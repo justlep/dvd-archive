@@ -8,6 +8,15 @@ export const editedDisc = writable(null);
 
 export const loadingDiscsPromise = writable(null);
 
+export const order = writable('disc-asc');
+
+export function orderByDisc() {
+    order.update(currentOrder => currentOrder === 'disc-asc' ? 'disc-desc' : 'disc-asc');
+}
+export function orderByTitle() {
+    order.update(currentOrder => currentOrder === 'title-asc' ? 'title-desc' : 'title-asc');
+}
+
 export const filter = writable('');
 
 export const autoScanBarcode = writable(true);
