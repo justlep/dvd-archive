@@ -36,7 +36,7 @@
 				    width: 640,
                     height: 480,
                     facingMode: 'environment'
-                    //, deviceId: 'TODO'
+                    //, deviceId: 'TODO' // TODO reuse previously selected device id, keep device id in store
                 },
                 singleChannel: false // red only should suffice for EANs
 			},

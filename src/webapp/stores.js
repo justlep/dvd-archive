@@ -25,7 +25,7 @@ export function addDisc() {
 }
 
 /**
- * @param {type Disc} disc
+ * @param {Disc} disc
  */
 export async function saveOrUpdateDisc(disc) {
     let discJson = disc.toJson(),
