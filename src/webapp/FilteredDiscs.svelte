@@ -35,7 +35,7 @@
 {:else}
 	<table>
 	    <thead><tr>
-	        <th on:click={orderByDisc} data-order class={$order.startsWith('disc') ? 'selected-order' : ''}>Disc #</th>
+	        <th on:click={orderByDisc} data-order class={$order.startsWith('disc') ? 'selected-order' : ''}>Disc#</th>
             <th>Image</th>
 	        <th on:click={orderByTitle} data-order class={$order.startsWith('title') ? 'selected-order' : ''}>Title</th>
 	        <th>EAN</th>
