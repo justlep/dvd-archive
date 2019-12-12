@@ -14,6 +14,9 @@
     </h2>
 
 	<input type="text" placeholder="Filter..." bind:value={$filter} on:keydown={(e) => e.key === 'Escape' && ($filter = '')}/>
+    {#if $filter}
+	    <button type="button" on:click={() => $filter = ''}>Clear</button>
+    {/if}
     <button type="button" on:click={addDisc}>Add disc</button>
 
     {#await $loadingDiscsPromise}
@@ -37,4 +40,5 @@
     .error {
         color: red;
     }
+
 </style>
