@@ -49,7 +49,7 @@ async function deleteDisc(req, res, next) {
  */
 function initApiRoutes(apiRouter) {
     const discRouter = Router();
-    apiRouter.use('/disc', discRouter);
+    apiRouter.use('/discs', discRouter);
 
     prefetchDiscByDiscId(discRouter);
 

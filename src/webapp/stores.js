@@ -43,8 +43,8 @@ export async function saveOrUpdateDisc(disc) {
 
     try {
         let isNew = !id,
-            result = isNew ? await api.post('/disc', discJson) :
-                             await api.put(`/disc/${id}`, discJson);
+            result = isNew ? await api.post('/discs', discJson) :
+                             await api.put(`/discs/${id}`, discJson);
 
         // TODO just add or update the actual disc object in the existing list?
         // let savedDiscJson = result.disc;
@@ -67,7 +67,7 @@ export async function deleteDisc(disc) {
         savedDiscJson;
 
     try {
-        await api.del('/disc/' + id);
+        await api.del('/discs/' + id);
 
         allDiscs.update(oldDiscs => oldDiscs.filter(d => d.id !== id));
 
@@ -96,7 +96,7 @@ export function reloadDiscs() {
     let newLoadingPromise = new Promise(async (resolve, reject) => {
         allDiscs.update(() => []);
         try {
-            let {discs} = await api.get('/disc');
+            let {discs} = await api.get('/discs');
             allDiscs.update(() => discs.map(discJson => new Disc(discJson)));
             resolve();
         } catch (err) {
