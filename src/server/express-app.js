@@ -1,7 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const { createServer }  = require('http');
-var camoConnect = require('camo').connect;
+const camoConnect = require('camo').connect;
 const path = require('path');
 
 const app = express();
