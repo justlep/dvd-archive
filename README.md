@@ -15,6 +15,8 @@ The discs' content (video data) is NOT archived!
 
 ## Solution
 
+![](https://www.justlep.net/temp/dvd-archive-1.0.0-screenshot.jpg)
+
 #### Features
 * Barcode scanner reading the article number (EAN) via webcam
 * Disc title lookup via EAN
@@ -67,8 +69,6 @@ After archiving, the `data/` folder contains both the database and all cover ima
 ## The Result
 
 I managed to unbox & archive 200 DVDs in less than 3 hours.
-
-![](https://www.justlep.net/temp/dvd-archive-1.0.0-screenshot.jpg)
 
 The freed space got gracefully filled with shoes ;-)
 
