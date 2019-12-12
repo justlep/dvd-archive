@@ -2,6 +2,9 @@
 	import Discs from './Discs.svelte';
 	import EditDiscForm from './EditDiscForm.svelte';
 	import {editedDisc, editDisc, addDisc, autoAddNext} from './stores';
+	import {version, repository} from '../../package';
+
+	document.title += ' v' + version;
 
 	function afterEdit({detail}) {
 		editDisc(null);
@@ -12,7 +15,10 @@
 </script>
 
 <main>
-	<h1>DVD Archive</h1>
+	<h1>
+		DVD Archive
+		<small class="version">v{ version }</small>
+	</h1>
 	<p>powered by Svelte.. hopefully</p>
 
 	{#if $editedDisc}
@@ -20,8 +26,12 @@
 	{:else}
 		<Discs/>
 	{/if}
-
 </main>
+
+<footer>
+	&copy; 2019 Lennart Pegel.
+	Source code available at <a href={repository.url} target="_blank">{repository.url}</a>
+</footer>
 
 <style>
 	main {
@@ -38,9 +48,24 @@
 		margin: 0;
 	}
 
+	.version {
+		font-size: 0.5em;
+		text-transform: none;
+	}
+
 	@media (min-width: 640px) {
 		main {
 			max-width: none;
 		}
+	}
+
+	footer {
+		border: 1px solid #eee;
+		background: #f0f0f0;
+		text-align: center;
+		margin: 1.5em;
+		padding: 0.5em 1.5em;
+		font-size: 0.8em;
+		z-index: 10;
 	}
 </style>
