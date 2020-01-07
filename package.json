@@ -13,18 +13,18 @@
   },
   "devDependencies": {
     "@rollup/plugin-json": "^4.0.0",
-    "rollup": "^1.12.0",
+    "rollup": "^1.28.0",
     "rollup-plugin-commonjs": "^10.0.0",
     "rollup-plugin-livereload": "^1.0.0",
     "rollup-plugin-node-resolve": "^5.2.0",
     "rollup-plugin-svelte": "^5.0.3",
     "rollup-plugin-terser": "^5.1.3",
-    "svelte": "^3.0.0"
+    "svelte": "^3.16.7"
   },
   "dependencies": {
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
-    "camo": "^0.12.3",
+    "camo": "git://github.com/justlep/camo-nedb-only.git",
     "duckduckgo-images-api": "git://github.com/justlep/duckduckgo-images-api.git",
     "express": "^4.17.1",
     "nedb": "^1.8.0",
