@@ -28,6 +28,10 @@ export default class Disc {
         return `/covers/${this.id}${lastChange ? '?' + lastChange : ''}`;
     }
 
+    get imdbUrl() {
+        return 'https://www.imdb.com/find?q=' + encodeURIComponent(this.title);
+    }
+
     /**
      * @param {Disc} other
      * @return {number}

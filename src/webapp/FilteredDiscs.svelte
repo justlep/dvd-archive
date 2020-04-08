@@ -1,9 +1,11 @@
 <script>
     import {editDisc, deleteDisc, order, orderByDisc, orderByTitle} from './stores';
     import DiscCover from './DiscCover.svelte';
+    import DiscsGrid from './DiscsGrid.svelte';
 
     export let discs;
     export let filter;
+    export let listMode;
 
     $: normalizedFilter = filter ? filter.toLowerCase().trim() : '';
     $: filteredDiscs = !discs ? [] :
@@ -32,6 +34,10 @@
 
 {#if !sortedFilteredDiscs.length}
 	<p>- No discs -</p>
+{:else if listMode === 'grid'}
+
+    <DiscsGrid discs={sortedFilteredDiscs}/>
+
 {:else}
 	<table>
 	    <thead><tr>
@@ -52,7 +58,7 @@
                 <td class="edit title">{ disc.title }</td>
                 <td class="edit">{ disc.ean }</td>
                 <td>
-                    <a href={'https://www.imdb.com/find?q=' + encodeURIComponent(disc.title)} target="_blank">IMDB</a>
+                    <a href={disc.imdbUrl} target="_blank">IMDB</a>
                 </td>
                 <td width="1">
                     {#if disc === discToDelete}

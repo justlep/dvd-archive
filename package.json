@@ -1,7 +1,7 @@
 {
   "name": "dvd-archive",
   "description": "NodeJS/Svelte-based web application for archiving a DVD collection",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "author": "Lennart Pegel (https://github.com/justlep)",
   "license": "MIT",
   "repository": {

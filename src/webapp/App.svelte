@@ -63,9 +63,12 @@
 		border: 1px solid #eee;
 		background: #f0f0f0;
 		text-align: center;
-		margin: 1.5em;
 		padding: 0.5em 1.5em;
 		font-size: 0.8em;
 		z-index: 10;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
 	}
 </style>
