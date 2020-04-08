@@ -22,6 +22,7 @@ The discs' content (video data) is NOT archived!
 * Disc title lookup via EAN
 * Easy selection of the right DVD cover images through Duckduckgo image search 
 * Persistence through document-based NeDB
+* Grid-like overview mode
 
 #### Requirements
 * `NodeJS 8+`
