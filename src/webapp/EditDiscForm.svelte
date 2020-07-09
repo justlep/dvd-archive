@@ -92,7 +92,7 @@
 
 <svelte:window on:keydown={handleEscape}/>
 
-<form on:submit={save} autocomplete=off>
+<form on:submit|preventDefault={save} autocomplete=off>
 
     <h2>
         {#if id}
