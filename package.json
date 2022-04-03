@@ -22,7 +22,7 @@
     "svelte": "^3.16.7"
   },
   "dependencies": {
-    "axios": "^0.21.1",
+    "axios": "^0.21.2",
     "body-parser": "^1.19.0",
     "camo": "git://github.com/justlep/camo-nedb-only.git",
     "duckduckgo-images-api": "git://github.com/justlep/duckduckgo-images-api.git",
